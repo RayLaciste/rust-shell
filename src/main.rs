@@ -5,4 +5,7 @@ fn main() {
     // TODO: Uncomment the code below to pass the first stage
     print!("$ ");
     io::stdout().flush().unwrap();
+    
+    let command = String::new();
+    io::stdout().read_line(@mut command).unwrap();
 }
