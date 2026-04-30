@@ -13,8 +13,7 @@ fn main() {
 
         if command == "exit" {
             break;
-        } else if &command[..4].to_string() == "echo" {
-
+        } else if command.starts_with("echo ") {
             println!("{}", &command[5..]);
         } else {
             println!("{}: command not found", command);
