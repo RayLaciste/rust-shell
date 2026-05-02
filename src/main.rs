@@ -32,7 +32,7 @@ fn main() {
                     let full_path = format!("{}/{}", dir, args);
                     if Path::new(&full_path).is_file() {
                         let permissions = std::fs::metadata(&full_path).unwrap().permissions();
-                        permissions.mode() & 0o111 != 0 {
+                        if permissions.mode() & 0o111 != 0 {
                             Some(full_path)
                         } else {
                             None
