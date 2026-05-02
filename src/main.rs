@@ -19,6 +19,7 @@ fn main() {
             println!("{}", &command[5..]);
         } else if command.starts_with("type ") { 
             let args = &command[5..];
+            let path_env = env::var("PATH").unwrap_or_default();
             if args == "echo" || args == "type" || args == "exit" {
                 println!("{} is a shell builtin", args);
             } else {
@@ -26,7 +27,6 @@ fn main() {
                 * Gets the value of environment variable PATH
                 *  result is either a string or defaults to ""
                 */
-                let path_env = env::var("PATH").unwrap_or_default();
                 let found = path_env.split(':').find_map(|dir| {
                     let full_path = format!("{}/{}", dir, args);
                     if Path::new(&full_path).is_file() {
