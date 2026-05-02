@@ -32,6 +32,9 @@ fn main() {
                     let full_path = format!("{}/{}", dir, args);
                     if Path::new(&full_path).is_file() {
                         let permissions = std::fs::metadata(&full_path).unwrap().permissions();
+                        // mode gets the permission bits
+                        // 0o111 in octal is 001 001 001 
+                        // ( r w x | r w x | r w x) read write execute
                         if permissions.mode() & 0o111 != 0 {
                             Some(full_path)
                         } else {
