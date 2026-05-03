@@ -2,6 +2,7 @@ use std::env;
 #[allow(unused_imports)]
 use std::io::{self, Write};
 use std::os::unix::fs::PermissionsExt;
+use std::os::unix::process::CommandExt;
 use std::path::Path;
 
 fn main() {
@@ -80,7 +81,8 @@ fn main() {
             });
 
             if let Some(path) = found {
-                std::process::Command::new(path)
+                std::process::Command::new(&path)
+                    .arg0(program)
                     .args(args)
                     .status()
                     .unwrap();
