@@ -1,41 +1,50 @@
+use std::env;
 #[allow(unused_imports)]
 use std::io::{self, Write};
-use std::env;
-use std::path::Path;
 use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
 
 fn main() {
     loop {
-
         print!("$ ");
         io::stdout().flush().unwrap();
- 
-        let mut command = String::new();
-        io::stdin().read_line(&mut command).unwrap();
-        let command = command.trim();
 
+        let mut command: String = String::new();
+        io::stdin().read_line(&mut command).unwrap();
+        let command: &str = command.trim(); // command + args
+
+        let path_env = env::var("PATH").unwrap_or_default();
+        let builtin = ["echo", "type", "exit"];
+
+        //  TODO:: get command -> if prefix is found and is an executable -> execute file
+
+        // ----- EXIT COMMAND
         if command == "exit" {
             break;
-        } else if command.starts_with("echo ") {
-            println!("{}", &command[5..]);
-        } else if command.starts_with("type ") { 
-            let args = &command[5..];
-            if args == "echo" || args == "type" || args == "exit" {
+        }
+
+        // ----- ECHO COMMAND
+        if let Some(rest) = command.strip_prefix("echo ") {
+            println!("{}", rest);
+            continue;
+        }
+
+        // ----- TYPE COMMAND
+        if let Some(rest) = command.strip_prefix("type ") {
+            let args: &str = rest;
+            if builtin.contains(&args) {
                 println!("{} is a shell builtin", args);
             } else {
-                /*
-                * Gets the value of environment variable PATH
-                *  result is either a string or defaults to ""
-                */
-                let path_env = env::var("PATH").unwrap_or_default();
                 let found = path_env.split(':').find_map(|dir| {
                     let full_path = format!("{}/{}", dir, args);
                     if Path::new(&full_path).is_file() {
+                        // does the file exist
                         let permissions = std::fs::metadata(&full_path).unwrap().permissions();
                         // mode gets the permission bits
-                        // 0o111 in octal is 001 001 001 
+                        // 0o111 in octal is 001 001 001
                         // ( r w x | r w x | r w x) read write execute
                         if permissions.mode() & 0o111 != 0 {
+                            // is the file executable
                             Some(full_path)
                         } else {
                             None
@@ -49,8 +58,37 @@ fn main() {
                     None => println!("{}: not found", args),
                 }
             }
-        } else {
-            println!("{}: command not found", command);
+
+            continue;
         }
+
+        // ----- EXECUTE PROGRAM
+        let parts: Vec<&str> = command.split_whitespace().collect();
+        if let Some((&program, args)) = parts.split_first() {
+            let found = path_env.split(':').find_map(|dir| {
+                let full_path = format!("{}/{}", dir, program);
+                if Path::new(&full_path).is_file() {
+                    let permissions = std::fs::metadata(&full_path).unwrap().permissions();
+                    if permissions.mode() & 0o111 != 0 {
+                        Some(full_path)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            });
+
+            if let Some(path) = found {
+                std::process::Command::new(path)
+                    .args(args)
+                    .status()
+                    .unwrap();
+                continue;
+            }
+        }
+
+        // ----- default
+        println!("{}: command not found", command);
     }
 }
