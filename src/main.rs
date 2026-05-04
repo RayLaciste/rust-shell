@@ -17,8 +17,6 @@ fn main() {
         let path_env = env::var("PATH").unwrap_or_default();
         let builtin = ["echo", "type", "exit"];
 
-        //  TODO:: get command -> if prefix is found and is an executable -> execute file
-
         // ----- EXIT COMMAND
         if command == "exit" {
             break;
@@ -30,7 +28,7 @@ fn main() {
             continue;
         }
 
-        // ----- TYPE COMMAND
+        // ----- TYPE COMMANAND
         if let Some(rest) = command.strip_prefix("type ") {
             let args: &str = rest;
             if builtin.contains(&args) {
