@@ -26,7 +26,7 @@ fn main() {
 
     loop {
         print!("$ ");
-        io::stdout().flush().unwrap();
+        io::stdout(``).flush().unwrap();
 
         let mut input: String = String::new();
         io::stdin()
@@ -51,7 +51,7 @@ fn main() {
             // ----- PWD COMMAND
             "pwd" => { println!("{}", env::current_dir().unwrap().display()); }
             "type" => match arguments[0] {
-                arg @ ("echo" | "exit" | "pwd" | "type") => println!("{} is a shell builting", arg),
+                arg @ ("echo" | "exit" | "pwd" | "type") => println!("{} is a shell builtin", arg),
                 arg => {
                     if let Some(path) = executables.get(arg) {
                         println!("{} is {}", arg, path.to_str().to_owned().unwrap());
