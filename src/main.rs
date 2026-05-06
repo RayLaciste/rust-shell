@@ -26,7 +26,7 @@ fn main() {
 
     loop {
         print!("$ ");
-        io::stdout(``).flush().unwrap();
+        io::stdout().flush().unwrap();
 
         let mut input: String = String::new();
         io::stdin()
