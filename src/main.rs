@@ -38,9 +38,6 @@ fn main() {
         let command = input[0];
         let arguments: &[&str] = &input[1..];
 
-        let path_env = env::var("PATH").unwrap_or_default();
-        let builtin = ["echo", "type", "exit", "pwd"];
-
         match command {
             "echo" => {
                 println!("{}", arguments.join(" "));
