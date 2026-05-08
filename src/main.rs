@@ -15,10 +15,11 @@ fn main() {
             let entry = entry.unwrap();
             let file_name = entry.file_name().into_string().unwrap();
             let path = entry.path();
-            if let Ok(metadata) = fs::metadata(&path) 
-                && metadata.is_file() 
-                && metadata.permissions().mode() & 0o111 != 0 
-                && !executables.contains_key(&file_name){
+            if let Ok(metadata) = fs::metadata(&path)
+                && metadata.is_file()
+                && metadata.permissions().mode() & 0o111 != 0
+                && !executables.contains_key(&file_name)
+            {
                 executables.insert(file_name, path);
             }
         }
@@ -49,7 +50,9 @@ fn main() {
                 break;
             }
             // ----- PWD COMMAND
-            "pwd" => { println!("{}", env::current_dir().unwrap().display()); }
+            "pwd" => {
+                println!("{}", env::current_dir().unwrap().display());
+            }
             "type" => match arguments[0] {
                 arg @ ("echo" | "exit" | "pwd" | "type") => println!("{} is a shell builtin", arg),
                 arg => {
