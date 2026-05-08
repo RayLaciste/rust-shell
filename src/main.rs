@@ -5,7 +5,6 @@ use std::fs;
 use std::io::{self, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::process::CommandExt;
-use std::path::Path;
 
 fn main() {
     let mut executables = HashMap::new();
@@ -50,6 +49,7 @@ fn main() {
             "pwd" => {
                 println!("{}", env::current_dir().unwrap().display());
             }
+            // ----- TYPE COMMAND
             "type" => match arguments[0] {
                 arg @ ("echo" | "exit" | "pwd" | "type") => println!("{} is a shell builtin", arg),
                 arg => {
@@ -60,6 +60,9 @@ fn main() {
                     }
                 }
             },
+            // ----- CD COMMAND
+            "cd" => std::env::set_current_dir(&arguments[0]).unwrap_or_else(|_| println!("cd: {}: No such file or directory", arguments[0])),
+            // ----- EXTERNAL COMMAND
             command => {
                 if let Some(path) = executables.get(command) {
                     let mut process = std::process::Command::new(path)
@@ -71,7 +74,7 @@ fn main() {
                 } else {
                     println!("{}: command not found", command);
                 }
-            }
+            },
         }
     }
 }
