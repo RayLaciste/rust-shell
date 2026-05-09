@@ -61,7 +61,16 @@ fn main() {
                 }
             },
             // ----- CD COMMAND
-            "cd" => std::env::set_current_dir(&arguments[0]).unwrap_or_else(|_| println!("cd: {}: No such file or directory", arguments[0])),
+            "cd" => match arguments[0] {
+                "~" => {
+                    std::env::set_current_dir(std::env::var("HOME").unwrap()).unwrap_or_else(|_| println!("cd: {}: No such file or directory", arguments[0]));
+                }
+                path => {
+                    std::env::set_current_dir(path).unwrap_or_else(|_| println!("cd: {}: No such file or directory", arguments[0]));
+                }
+            }
+
+
             // ----- EXTERNAL COMMAND
             command => {
                 if let Some(path) = executables.get(command) {
