@@ -35,7 +35,7 @@ fn main() {
 
         let input = input.split_whitespace().collect::<Vec<&str>>();
         let command = input[0];
-        let arguments: &[&str] = &input[1..];
+        let arguments = &input[1..];
 
         match command {
             "echo" => {
